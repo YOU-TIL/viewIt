@@ -1,0 +1,49 @@
+{
+  "name": "viewIt",
+  "version": "0.0.1",
+  "description": "Simple Viewer",
+  "main": "index.js",
+  "scripts": {
+    "dist": "electron-builder",
+    "run": "electron index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YOU-TIL/viewIt.git"
+  },
+  "author": "SeoRii <studioSeoRii@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/YOU-TIL/viewIt/issues"
+  },
+  "build": {
+    "productName": "Simple Viewer",
+    "appId": "youtil.doit.viewit",
+    "directories": {
+      "output": "build"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "./res/logo.ico"
+    },
+    "portable": {
+      "artifactName": "viewIt.exe"
+    }
+  },
+  "homepage": "https://github.com/YOU-TIL/viewIt#readme",
+  "dependencies": {
+    "request": "^2.88.2",
+    "electron-settings": "^4.0.2"
+  },
+  "devDependencies": {
+    "electron": "^9.1.0",
+    "electron-builder": "^22.7.0"
+  }
+}
