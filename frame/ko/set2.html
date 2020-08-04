@@ -21,8 +21,15 @@
             <br><br>
         </div>
         <br>
-        <a class="button" href="open.html">계속하기</a>
+        <p class="button" onclick="saveSetting();" style="cursor:pointer;">계속하기</p>
     </div>
 </div>
+<script>
+    async function saveSetting() {
+        await setting.set('firstRunSetted', true);
+        if (!await setting.get('file')) loadHTML('open.html');
+        else loadHTML('viewer.html');
+    }
+</script>
 </body>
 </html>
