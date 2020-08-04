@@ -56,3 +56,14 @@
     background: #827397;
     cursor: pointer;
 }
+
+
+#mainCont {
+    max-height: calc(100vh - 32px);
+    overflow-y: scroll;
+}
+
+.fullscreened #mainCont {
+    max-height: 100vh;
+    overflow-y: scroll;
+}

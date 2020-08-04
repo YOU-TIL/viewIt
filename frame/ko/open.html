@@ -1,0 +1,26 @@
+<html lang="ko">
+<body>
+<div class="section" ondragover="dragOverHandler(event);" ondrop="dropHandler(event);"
+     style="width: 100%;height: calc(100vh - 32px);">
+    <h2 style="margin:10px;">여기를 눌러서 열 파일을 선택하거나 파일을 여기로 드래그해세요.</h2>
+</div>
+<script>
+    function dragOverHandler(e) {
+        e.preventDefault();
+    }
+
+    async function dropHandler(e) {
+        e.preventDefault();
+        if (e.dataTransfer.items[0].kind === 'file') {
+            const file = e.dataTransfer.items[0].getAsFile();
+            if (file.type.substring(0, 4) !== 'text') {
+                showToast('텍스트 파일이 아닙니다.');
+            }
+            await setting.set('file', file.path);
+            await setting.set('scroll', 0);
+            loadHTML('viewer.html');
+        }
+    }
+</script>
+</body>
+</html>

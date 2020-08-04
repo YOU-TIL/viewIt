@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<body>
+<div id="mainCont"></div>
+</body>
+<script>
+    let nowScroll = 0, loadBeginEl = 0, loadEndEl = 0, chunkSize = 500, fileList;
+
+    async function saveScroll() {
+        await setting.set('scroll', nowScroll);
+    }
+
+    setInterval(saveScroll, 500);
+
+    async function scrollHandler() {
+        while (document.getElementById('body_' + nowScroll).offsetTop <= document.getElementById('mainCont').offsetTop + document.getElementById('mainCont').scrollTop && nowScroll < loadEndEl) ++nowScroll;
+        while (document.getElementById('body_' + nowScroll).offsetTop > document.getElementById('mainCont').offsetTop + document.getElementById('mainCont').scrollTop && nowScroll > loadBeginEl) --nowScroll;
+        while (loadBeginEl + chunkSize / 2 < nowScroll) {
+            document.getElementById('body_' + loadBeginEl).remove();
+            ++loadBeginEl;
+        }
+        while (loadEndEl - chunkSize / 2 > nowScroll) {
+            --loadEndEl;
+            document.getElementById('body_' + loadEndEl).remove();
+        }
+        while (loadBeginEl + chunkSize / 2 > nowScroll && loadBeginEl > 0) {
+            --loadBeginEl;
+            let newNode = document.createElement("p");
+            newNode.innerText = fileList[loadBeginEl];
+            newNode.className = "body-common";
+            newNode.id = 'body_' + loadBeginEl;
+            document.getElementById('mainCont').prepend(newNode);
+        }
+        while (loadEndEl - chunkSize / 2 < nowScroll) {
+            let newNode = document.createElement("p");
+            newNode.innerText = fileList[loadEndEl];
+            newNode.className = "body-common";
+            newNode.id = 'body_' + loadEndEl;
+            document.getElementById('mainCont').append(newNode);
+            ++loadEndEl;
+        }
+    }
+
+    async function viewer_init() {
+        const mainCont = document.getElementById('mainCont');
+        let openFileName = await setting.get('file');
+        changeTitle('viewIt - ' + (openFileName).split('\\').slice(-1)[0].split('.').slice(0, -1).join('.'));
+        setTimeout(async () => {
+            chardet.detectFile(openFileName, {sampleSize: 500}).then(async encoding => {
+                let input = fs.readFileSync(openFileName, {encoding: "binary"});
+                let data = iconv.decode(input, encoding);
+                fileList = data.toString().split('\n');
+                nowScroll = await setting.get('scroll');
+                loadBeginEl = nowScroll - chunkSize / 2;
+                if (loadBeginEl < 0) loadBeginEl = 0;
+                loadEndEl = loadBeginEl + chunkSize;
+                for (let i = loadBeginEl; i < loadEndEl; ++i) {
+                    let newNode = document.createElement("p");
+                    newNode.innerText = fileList[i];
+                    newNode.className = "body-common";
+                    newNode.id = 'body_' + i;
+                    mainCont.appendChild(newNode);
+                }
+                mainCont.scrollTop = document.getElementById('body_' + nowScroll).offsetTop - mainCont.offsetTop - 10;
+            });
+        }, 0);
+        mainCont.addEventListener('scroll', scrollHandler);
+    }
+</script>
+</html>

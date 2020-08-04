@@ -40,7 +40,9 @@
   "homepage": "https://github.com/YOU-TIL/viewIt#readme",
   "dependencies": {
     "request": "^2.88.2",
-    "electron-settings": "^4.0.2"
+    "electron-settings": "^4.0.2",
+    "chardet": "^1.2.1",
+    "iconv-lite": "^0.6.2"
   },
   "devDependencies": {
     "electron": "^9.1.0",

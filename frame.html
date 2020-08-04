@@ -7,6 +7,8 @@
     <link href="./css/card.css" rel="stylesheet" type="text/css">
     <link href="./css/input.css" rel="stylesheet" type="text/css">
     <link href="./css/search.css" rel="stylesheet" type="text/css">
+    <link href="./css/switch.css" rel="stylesheet" type="text/css">
+    <link href="./css/body.css" rel="stylesheet" type="text/css">
     <link id="theme" rel="stylesheet" type="text/css">
 </head>
 
@@ -70,7 +72,10 @@
     const fs = require('fs');
     const path = require('path');
     const {spawn, execSync} = require('child_process');
-    const urlParams = new URLSearchParams(window.location.search);    const locale = urlParams.get('locale');
+    const urlParams = new URLSearchParams(window.location.search);
+    const locale = urlParams.get('locale');
+    const chardet = require('chardet');
+    const iconv = require('iconv-lite');
 
     let nowMainEl = document.getElementById('main'), nextMainEl, updatingFrame = false, nowPage;
     let loadedPage = {};
@@ -157,8 +162,16 @@
         isToastShowing = false;
     }
 
-    function init() {
-        loadHTML('index.html');
+    function changeTitle(msg) {
+        document.title = msg;
+        document.getElementById('appTitle').innerText = msg;
+    }
+
+    async function init() {
+        loadHTML('viewer.html');
+        return;
+        if (!await setting.get('firstRunSetted')) loadHTML('set1.html');
+        else loadHTML('index.html');
     }
 
     setTimeout(() => {
