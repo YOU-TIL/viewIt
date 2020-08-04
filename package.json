@@ -25,7 +25,7 @@
     "win": {
       "target": [
         {
-          "target": "portable",
+          "target": "NSIS",
           "arch": [
             "x64"
           ]
@@ -35,6 +35,9 @@
     },
     "portable": {
       "artifactName": "viewIt.exe"
+    },
+    "nsis": {
+      "createStartMenuShortcut": true
     }
   },
   "homepage": "https://github.com/YOU-TIL/viewIt#readme",
