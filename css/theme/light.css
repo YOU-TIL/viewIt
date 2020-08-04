@@ -36,3 +36,11 @@ a {
     color: #FFFFFF;
     background: #00D465;
 }
+
+#viewProgress {
+    background: #00D465;
+}
+
+#viewProgressInfo {
+    color: black;
+}

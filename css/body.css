@@ -5,3 +5,18 @@
 #mainCont {
     padding: 0 10px;
 }
+
+#viewProgress {
+    height: 5px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transition: all .5s;
+}
+
+#viewProgressInfo {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 10px;
+}

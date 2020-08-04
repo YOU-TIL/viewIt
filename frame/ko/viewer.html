@@ -2,6 +2,8 @@
 <html lang="ko">
 <body>
 <div id="mainCont"></div>
+<div id="viewProgress"></div>
+<div id="viewProgressInfo"></div>
 </body>
 <script>
     let nowScroll = 0, loadBeginEl = 0, loadEndEl = 0, chunkSize = 500, fileList;
@@ -31,7 +33,7 @@
             newNode.id = 'body_' + loadBeginEl;
             document.getElementById('mainCont').prepend(newNode);
         }
-        while (loadEndEl - chunkSize / 2 < nowScroll) {
+        while (loadEndEl - chunkSize / 2 < nowScroll && fileList.length - 1 > loadEndEl) {
             let newNode = document.createElement("p");
             newNode.innerText = fileList[loadEndEl];
             newNode.className = "body-common";
@@ -39,6 +41,16 @@
             document.getElementById('mainCont').append(newNode);
             ++loadEndEl;
         }
+        document.getElementById('viewProgress').style.width = (nowScroll + 1) / fileList.length * 100 + 'vw';
+        document.getElementById('viewProgressInfo').innerText = Math.floor((nowScroll + 1) / fileList.length * 100) + '% (' + (nowScroll + 1).toString() + '/' + fileList.length.toString() + ')';
+    }
+
+    function resizeHandler() {
+        let tmpScroll = nowScroll;
+        setTimeout(() => {
+            nowScroll = tmpScroll;
+            document.getElementById('mainCont').scrollTop = document.getElementById('body_' + nowScroll).offsetTop - mainCont.offsetTop - 10;
+        }, 200);
     }
 
     async function viewer_init() {
@@ -53,6 +65,7 @@
                 nowScroll = await setting.get('scroll');
                 loadBeginEl = nowScroll - chunkSize / 2;
                 if (loadBeginEl < 0) loadBeginEl = 0;
+                if (loadBeginEl > fileList.length - chunkSize - 1) loadBeginEl = fileList.length - chunkSize - 1;
                 loadEndEl = loadBeginEl + chunkSize;
                 for (let i = loadBeginEl; i < loadEndEl; ++i) {
                     let newNode = document.createElement("p");
@@ -65,6 +78,7 @@
             });
         }, 0);
         mainCont.addEventListener('scroll', scrollHandler);
+        window.addEventListener('resize', resizeHandler);
     }
 </script>
 </html>
