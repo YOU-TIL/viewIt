@@ -168,10 +168,9 @@
     }
 
     async function init() {
-        loadHTML('viewer.html');
-        return;
         if (!await setting.get('firstRunSetted')) loadHTML('set1.html');
-        else loadHTML('index.html');
+        else if (!await setting.get('file')) loadHTML('open.html');
+        else loadHTML('viewer.html');
     }
 
     setTimeout(() => {
