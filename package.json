@@ -19,6 +19,7 @@
   "build": {
     "productName": "Simple Viewer",
     "appId": "youtil.doit.viewit",
+    "artifactName": "viewIt.${ext}",
     "directories": {
       "output": "build"
     },
@@ -32,9 +33,6 @@
         }
       ],
       "icon": "./res/logo.ico"
-    },
-    "portable": {
-      "artifactName": "viewIt.exe"
     },
     "nsis": {
       "createStartMenuShortcut": true
