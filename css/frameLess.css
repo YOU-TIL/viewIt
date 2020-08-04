@@ -64,15 +64,15 @@ body {
 #main.hiddenContent {
     margin-left: 10px;
     opacity: 0 !important;
-    transition: all .3s ease-out;
+    transition: all .2s ease-out;
 }
 
 #main.hideContent {
     height: calc(100% - 6px);
-    margin-left: -50px;
+    margin-left: -30px;
     margin-bottom: 10px;
     opacity: 0 !important;
-    transition: all .5s ease-in;
+    transition: all .3s ease-in;
 }
 
 #titlebar {

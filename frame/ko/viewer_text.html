@@ -6,7 +6,7 @@
 <div id="viewProgressInfo"></div>
 </body>
 <script>
-    let nowScroll = 0, loadBeginEl = 0, loadEndEl = 0, chunkSize = 500, fileList;
+    let nowScroll, loadBeginEl, loadEndEl, chunkSize = 500, fileList;
 
     async function saveScroll() {
         await setting.set('scroll', nowScroll);
@@ -85,6 +85,7 @@
     function viewer_text_exit() {
         document.getElementById('mainCont').removeEventListener('scroll', scrollHandler);
         window.removeEventListener('resize', resizeHandler);
+        fileList = [];
     }
 </script>
 </html>

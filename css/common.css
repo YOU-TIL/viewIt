@@ -69,7 +69,7 @@
 }
 
 #sideMenu {
-    transition: all ease-in-out .3s;
+    transition: all cubic-bezier(0,.45,0,.99) .3s;
     width: 300px;
     height: calc(100vh - 32px);
     position: absolute;
@@ -79,12 +79,13 @@
     z-index: 100;
 }
 
-.fullscreened #sideMenu {
-    top: 0 !important;;
+.fullscreened:not(.showTitlebar) #sideMenu {
+    top: 0 !important;
+    height: 100vh;
 }
 
 .sideMenu-open {
-    transition: all ease-in-out .3s;
+    transition: all cubic-bezier(0,.45,0,.99) .3s;
     left: 0 !important;
 }
 
