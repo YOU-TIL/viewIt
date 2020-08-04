@@ -74,3 +74,16 @@ a {
 #viewProgressInfo {
     color: white;
 }
+
+#sideMenu {
+    background: #333333;
+}
+
+.sideItem:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    opacity: 0.5;
+}
+
+.sideItem:active {
+    background: rgba(255, 255, 255, 0.2) !important;
+}

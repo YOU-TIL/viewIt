@@ -28,7 +28,7 @@
     async function saveSetting() {
         await setting.set('firstRunSetted', true);
         if (!await setting.get('file')) loadHTML('open.html');
-        else loadHTML('viewer.html');
+        else loadHTML(`viewer_${await setting.get('type')}.html`);
     }
 </script>
 </body>

@@ -44,3 +44,16 @@ a {
 #viewProgressInfo {
     color: black;
 }
+
+#sideMenu {
+    background: #FFFFFF;
+}
+
+.sideItem:hover {
+    background: rgba(0, 0, 0, 0.1) !important;
+    opacity: 0.5;
+}
+
+.sideItem:active {
+    background: rgba(0, 0, 0, 0.2) !important;
+}

@@ -13,12 +13,14 @@
         e.preventDefault();
         if (e.dataTransfer.items[0].kind === 'file') {
             const file = e.dataTransfer.items[0].getAsFile();
-            if (file.type.substring(0, 4) !== 'text') {
-                showToast('텍스트 파일이 아닙니다.');
+            if (file.type.substring(0, 4) === 'text') {
+                await setting.set('type', 'text');
+            } else {
+                showToast('지원하는 파일 형식이 아닙니다.');
             }
             await setting.set('file', file.path);
             await setting.set('scroll', 0);
-            loadHTML('viewer.html');
+            loadHTML(`viewer_${await setting.get('type')}.html`);
         }
     }
 </script>

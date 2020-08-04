@@ -16,6 +16,9 @@
 <header id="titlebar">
     <div id="drag-region">
         <div id="window-title">
+            <div id="menu-button" onclick="menuToggle();">
+                <span>&#xE73D;</span>
+            </div>
             <span id="appTitle">viewIt</span>
         </div>
         <div id="window-controls">
@@ -41,11 +44,18 @@
     </div>
 </header>
 
+<div id="sideMenu">
+    <div class="sideItem" onclick="openViewer();">뷰어 열기</div>
+    <div class="sideItem" onclick="openFile();">파일 열기</div>
+    <div class="sideItem" onclick="throw new Error('not made');">설정</div>
+</div>
+
 <div id="main">
     <div style="height:calc(100vh - 32px);calc(100vw - 32px);display: flex;align-items: center;justify-content: center;">
         <img src="res/logo.png" style="width:200px;">
     </div>
 </div>
+
 <div id="scripts"></div>
 
 <div id="toast">테스트</div>
@@ -82,6 +92,7 @@
 
     async function loadHTML(html) {
         if (updatingFrame) return;
+        if (nowPage == html) return;
         updatingFrame = true;
         let render;
         try {
@@ -168,9 +179,14 @@
     }
 
     async function init() {
+        document.querySelectorAll('.sideItem').forEach(el => {
+            el.addEventListener('click', () => {
+                document.getElementById('sideMenu').classList.remove('sideMenu-open');
+            });
+        })
         if (!await setting.get('firstRunSetted')) loadHTML('set1.html');
         else if (!await setting.get('file')) loadHTML('open.html');
-        else loadHTML('viewer.html');
+        else loadHTML(`viewer_${await setting.get('type')}.html`);
     }
 
     setTimeout(() => {
@@ -186,6 +202,21 @@
     window.onerror = function errorHandler(errorMsg, url, lineNumber) {
         showToast('오류가 발생했습니다 :(', '프로그램 재시작', 'restart');
         return false;
+    }
+
+    function menuToggle() {
+        if (document.getElementById('sideMenu').classList.contains('sideMenu-open')) document.getElementById('sideMenu').classList.remove('sideMenu-open');
+        else document.getElementById('sideMenu').classList.add('sideMenu-open');
+    }
+
+    async function openViewer() {
+        if (!await setting.get('file')) showToast('열린 파일이 없습니다.');
+        else loadHTML(`viewer_${await setting.get('type')}.html`);
+    }
+
+    function openFile() {
+        changeTitle('viewIt');
+        loadHTML('open.html');
     }
 </script>
 </body>

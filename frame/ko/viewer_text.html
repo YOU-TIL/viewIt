@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <body>
-<div id="mainCont"></div>
+<div id="mainCont" onclick="document.getElementById('sideMenu').classList.remove('sideMenu-open');"></div>
 <div id="viewProgress"></div>
 <div id="viewProgressInfo"></div>
 </body>
@@ -15,6 +15,7 @@
     setInterval(saveScroll, 500);
 
     async function scrollHandler() {
+        document.getElementById('sideMenu').classList.remove('sideMenu-open');
         while (document.getElementById('body_' + nowScroll).offsetTop <= document.getElementById('mainCont').offsetTop + document.getElementById('mainCont').scrollTop && nowScroll < loadEndEl) ++nowScroll;
         while (document.getElementById('body_' + nowScroll).offsetTop > document.getElementById('mainCont').offsetTop + document.getElementById('mainCont').scrollTop && nowScroll > loadBeginEl) --nowScroll;
         while (loadBeginEl + chunkSize / 2 < nowScroll) {
@@ -53,7 +54,7 @@
         }, 200);
     }
 
-    async function viewer_init() {
+    async function viewer_text_init() {
         const mainCont = document.getElementById('mainCont');
         let openFileName = await setting.get('file');
         changeTitle('viewIt - ' + (openFileName).split('\\').slice(-1)[0].split('.').slice(0, -1).join('.'));
@@ -79,6 +80,11 @@
         }, 0);
         mainCont.addEventListener('scroll', scrollHandler);
         window.addEventListener('resize', resizeHandler);
+    }
+
+    function viewer_text_exit() {
+        document.getElementById('mainCont').removeEventListener('scroll', scrollHandler);
+        window.removeEventListener('resize', resizeHandler);
     }
 </script>
 </html>

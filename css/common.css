@@ -67,3 +67,30 @@
     max-height: 100vh;
     overflow-y: scroll;
 }
+
+#sideMenu {
+    transition: all ease-in-out .3s;
+    width: 300px;
+    height: calc(100vh - 32px);
+    position: absolute;
+    top: 32px;
+    left: -300px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    z-index: 100;
+}
+
+.fullscreened #sideMenu {
+    top: 0 !important;;
+}
+
+.sideMenu-open {
+    transition: all ease-in-out .3s;
+    left: 0 !important;
+}
+
+.sideItem {
+    width: 100%;
+    height: 32px;
+    padding: 5px;
+    font-size: 22px;
+}
