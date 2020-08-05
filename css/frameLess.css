@@ -208,13 +208,13 @@ body {
 .fullscreened.hideTitlebar #titlebar {
     position: fixed;
     top: -32px !important;
-    transition: top 0.3s ease-out;
+    transition: top 0.3s cubic-bezier(0, .45, 0, .99);
 }
 
 .fullscreened.showTitlebar #titlebar {
     position: fixed;
     top: 0px !important;
-    transition: top 0.3s ease-out;
+    transition: top 0.3s cubic-bezier(0, .45, 0, .99);
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
