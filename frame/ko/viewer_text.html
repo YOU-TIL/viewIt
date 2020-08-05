@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <html lang="ko">
 <body>
-<div id="mainCont" onclick="document.getElementById('sideMenu').classList.remove('sideMenu-open');"></div>
+<div id="mainCont" onclick="closeAllOption();"></div>
 <div id="viewProgress"></div>
-<div id="viewProgressInfo"></div>
+<div id="viewProgressInfo" onclick="openProgressMenu();"></div>
+<div id="view-text-progress-option">
+    <div onclick="scrollToTop();">맨 위로</div>
+    <div onclick="scrollToBottom();">맨 아래로</div>
+    <div>특정 줄로 이동</div>
+    <div>북마크</div>
+</div>
 </body>
 <script>
     let nowScroll, loadBeginEl, loadEndEl, chunkSize = 500, fileList;
     let openedMD5;
+    let highlightObj;
 
     async function saveScroll() {
         await setting.set('scroll_' + openedMD5, nowScroll);
@@ -17,31 +24,40 @@
 
     async function scrollHandler() {
         document.getElementById('sideMenu').classList.remove('sideMenu-open');
-        while (document.getElementById('body_' + nowScroll).offsetTop <= document.getElementById('mainCont').offsetTop + document.getElementById('mainCont').scrollTop && nowScroll < loadEndEl) ++nowScroll;
-        while (document.getElementById('body_' + nowScroll).offsetTop > document.getElementById('mainCont').offsetTop + document.getElementById('mainCont').scrollTop && nowScroll > loadBeginEl) --nowScroll;
-        while (loadBeginEl + chunkSize / 2 < nowScroll) {
-            document.getElementById('body_' + loadBeginEl).remove();
-            ++loadBeginEl;
-        }
-        while (loadEndEl - chunkSize / 2 > nowScroll) {
-            --loadEndEl;
-            document.getElementById('body_' + loadEndEl).remove();
-        }
-        while (loadBeginEl + chunkSize / 2 > nowScroll && loadBeginEl > 0) {
-            --loadBeginEl;
-            let newNode = document.createElement("p");
-            newNode.innerText = fileList[loadBeginEl];
-            newNode.className = "body-common";
-            newNode.id = 'body_' + loadBeginEl;
-            document.getElementById('mainCont').prepend(newNode);
-        }
-        while (loadEndEl - chunkSize / 2 < nowScroll && fileList.length - 1 > loadEndEl) {
-            let newNode = document.createElement("p");
-            newNode.innerText = fileList[loadEndEl];
-            newNode.className = "body-common";
-            newNode.id = 'body_' + loadEndEl;
-            document.getElementById('mainCont').append(newNode);
-            ++loadEndEl;
+        if (nowScroll < 0) nowScroll = 0;
+        if (nowScroll >= fileList.length) nowScroll = fileList.length - 1;
+        try {
+
+            while (document.getElementById('body_' + nowScroll).offsetTop <= document.getElementById('mainCont').offsetTop + document.getElementById('mainCont').scrollTop && nowScroll < loadEndEl) ++nowScroll;
+            while (document.getElementById('body_' + nowScroll).offsetTop > document.getElementById('mainCont').offsetTop + document.getElementById('mainCont').scrollTop && nowScroll > loadBeginEl) --nowScroll;
+            while (loadBeginEl + chunkSize / 2 < nowScroll) {
+                document.getElementById('body_' + loadBeginEl).remove();
+                ++loadBeginEl;
+            }
+            while (loadEndEl - chunkSize / 2 > nowScroll) {
+                --loadEndEl;
+                document.getElementById('body_' + loadEndEl).remove();
+            }
+            while (loadBeginEl + chunkSize / 2 > nowScroll && loadBeginEl > 0) {
+                --loadBeginEl;
+                let newNode = document.createElement("p");
+                newNode.innerText = fileList[loadBeginEl];
+                if (highlightObj.hasOwnProperty(loadBeginEl)) newNode.className = "body-common body-highlight";
+                else newNode.className = "body-common";
+                newNode.id = 'body_' + loadBeginEl;
+                document.getElementById('mainCont').prepend(newNode);
+            }
+            while (loadEndEl - chunkSize / 2 < nowScroll && fileList.length - 1 > loadEndEl) {
+                let newNode = document.createElement("p");
+                newNode.innerText = fileList[loadEndEl];
+                if (highlightObj.hasOwnProperty(loadEndEl)) newNode.className = "body-common body-highlight";
+                else newNode.className = "body-common";
+                newNode.id = 'body_' + loadEndEl;
+                document.getElementById('mainCont').append(newNode);
+                ++loadEndEl;
+            }
+        } catch (e) {
+
         }
         try {
             document.getElementById('body_' + (fileList.length - 2)).style.marginBottom = '15px';
@@ -63,6 +79,8 @@
     async function viewer_text_init() {
         const mainCont = document.getElementById('mainCont');
         let openFileName = await setting.get('file');
+        highlightObj = await setting.get('highlight_' + md5File);
+        if (!highlightObj) highlightObj = Object();
         mainCont.innerHTML = "";
         openedMD5 = md5File.sync(openFileName).toString();
         changeTitle('viewIt - ' + (openFileName).split('\\').slice(-1)[0].split('.').slice(0, -1).join('.'));
@@ -84,8 +102,10 @@
                 for (let i = loadBeginEl; i < loadEndEl; ++i) {
                     let newNode = document.createElement("p");
                     newNode.innerText = fileList[i];
-                    newNode.className = "body-common";
+                    if (highlightObj.hasOwnProperty(i)) newNode.className = "body-common body-highlight";
+                    else newNode.className = "body-common";
                     newNode.id = 'body_' + i;
+                    newNode.onclick = highlight;
                     mainCont.appendChild(newNode);
                 }
                 mainCont.scrollTop = document.getElementById('body_' + nowScroll).offsetTop - mainCont.offsetTop - 10;
@@ -94,17 +114,68 @@
                 } catch (e) {
 
                 }
+                mainCont.addEventListener('scroll', scrollHandler);
+                window.addEventListener('resize', resizeHandler);
+                closeToast();
+                await scrollHandler();
             });
         }, 0);
-        mainCont.addEventListener('scroll', scrollHandler);
-        window.addEventListener('resize', resizeHandler);
-        closeToast();
     }
 
     function viewer_text_exit() {
         document.getElementById('mainCont').removeEventListener('scroll', scrollHandler);
         window.removeEventListener('resize', resizeHandler);
         fileList = [];
+    }
+
+    function openProgressMenu() {
+        document.getElementById('view-text-progress-option').classList.remove('close');
+        document.getElementById('view-text-progress-option').classList.add('open');
+    }
+
+    function closeAllOption() {
+        document.getElementById('sideMenu').classList.remove('sideMenu-open');
+        if (document.getElementById('view-text-progress-option').classList.contains('open')) {
+            document.getElementById('view-text-progress-option').classList.add('close');
+            setTimeout(() => {
+                document.getElementById('view-text-progress-option').classList.remove('open');
+                document.getElementById('view-text-progress-option').classList.remove('close');
+            }, 150);
+        }
+    }
+
+    async function scrollToTop() {
+        showToast('불러오는 중...', '', '', true);
+        nowScroll = 0;
+        viewer_text_exit();
+        await setting.set('scroll_' + openedMD5, 0);
+        await viewer_text_init();
+        closeAllOption();
+        await scrollHandler();
+    }
+
+    async function scrollToBottom() {
+        showToast('불러오는 중...', '', '', true);
+        nowScroll = fileList.length - 3;
+        viewer_text_exit();
+        await setting.set('scroll_' + openedMD5, nowScroll);
+        await viewer_text_init();
+        closeAllOption();
+        await scrollHandler();
+    }
+
+    async function highlight(e) {
+        if (document.getElementById('view-text-progress-option').classList.contains('open')) return;
+        el = e.toElement;
+        let id = el.id.substr(5);
+        if (highlightObj.hasOwnProperty(id)) {
+            delete highlightObj[id]
+            document.getElementById('body_' + id).classList.remove('body-highlight');
+        } else {
+            highlightObj[id] = true;
+            document.getElementById('body_' + id).classList.add('body-highlight');
+        }
+        await setting.set('highlight_' + md5File, highlightObj);
     }
 </script>
 </html>

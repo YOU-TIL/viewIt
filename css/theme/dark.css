@@ -81,9 +81,20 @@ a {
 
 .sideItem:hover, .hisItem:hover {
     background: rgba(255, 255, 255, 0.1) !important;
-    opacity: 0.5;
 }
 
 .sideItem:active, .hisItem:active {
     background: rgba(255, 255, 255, 0.2) !important;
+}
+
+#view-text-progress-option {
+    background: #333333;
+}
+
+.body-common:active {
+    background: #777777;
+}
+
+.body-highlight {
+    background: #626301;
 }

@@ -51,9 +51,20 @@ a {
 
 .sideItem:hover, .hisItem:hover {
     background: rgba(0, 0, 0, 0.1) !important;
-    opacity: 0.5;
 }
 
 .sideItem:hover, .hisItem:active {
     background: rgba(0, 0, 0, 0.2) !important;
+}
+
+#view-text-progress-option {
+    background: #FFFFFF;
+}
+
+.body-common:active {
+    background: #AAAAAA;
+}
+
+.body-highlight {
+    background: #feffbe;
 }

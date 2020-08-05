@@ -1,0 +1,33 @@
+
+#view-text-progress-option {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    height: 0;
+    overflow: hidden;
+}
+
+#view-text-progress-option div {
+    padding: 10px;
+    font-size: 20px;
+}
+
+#view-text-progress-option div:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+#view-text-progress-option div:active {
+    background: rgba(255, 255, 255, 0.2) !important;
+}
+
+#view-text-progress-option.open {
+    transition: height 0.3s cubic-bezier(0, .45, 0, .99);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    height: 170px;
+}
+
+#view-text-progress-option.close {
+    opacity: 0;
+    transition: opacity 0.15s cubic-bezier(0, .45, 0, .99);
+    height: 130px;
+}

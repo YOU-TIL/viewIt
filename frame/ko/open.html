@@ -54,7 +54,7 @@
                 {name: 'Text', extensions: ['txt']},
             ]
         }).then(res => {
-            if (res.filePaths) fileOpenHandler(res.filePaths[0]);
+            if (res.filePaths[0]) fileOpenHandler(res.filePaths[0]);
         });
     }
 </script>
