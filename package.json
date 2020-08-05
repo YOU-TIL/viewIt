@@ -1,5 +1,5 @@
 {
-  "name": "viewIt",
+  "name": "viewit",
   "version": "0.0.1",
   "description": "Simple Viewer",
   "main": "index.js",
@@ -43,7 +43,8 @@
     "request": "^2.88.2",
     "electron-settings": "^4.0.2",
     "chardet": "^1.2.1",
-    "iconv-lite": "^0.6.2"
+    "iconv-lite": "^0.6.2",
+    "md5-file": "^5.0.0"
   },
   "devDependencies": {
     "electron": "^9.1.0",

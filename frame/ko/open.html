@@ -19,9 +19,12 @@
                 showToast('지원하는 파일 형식이 아닙니다.');
             }
             await setting.set('file', file.path);
-            await setting.set('scroll', 0);
             loadHTML(`viewer_${await setting.get('type')}.html`);
         }
+    }
+
+    function open_init() {
+        changeTitle('viewIt');
     }
 </script>
 </body>

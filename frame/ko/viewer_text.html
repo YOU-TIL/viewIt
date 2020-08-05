@@ -7,9 +7,10 @@
 </body>
 <script>
     let nowScroll, loadBeginEl, loadEndEl, chunkSize = 500, fileList;
+    let openedMD5;
 
     async function saveScroll() {
-        await setting.set('scroll', nowScroll);
+        await setting.set('scroll_' + openedMD5, nowScroll);
     }
 
     setInterval(saveScroll, 500);
@@ -42,6 +43,11 @@
             document.getElementById('mainCont').append(newNode);
             ++loadEndEl;
         }
+        try {
+            document.getElementById('body_' + (fileList.length - 2)).style.marginBottom = '15px';
+        } catch (e) {
+
+        }
         document.getElementById('viewProgress').style.width = (nowScroll + 1) / fileList.length * 100 + 'vw';
         document.getElementById('viewProgressInfo').innerText = Math.floor((nowScroll + 1) / fileList.length * 100) + '% (' + (nowScroll + 1).toString() + '/' + fileList.length.toString() + ')';
     }
@@ -57,13 +63,20 @@
     async function viewer_text_init() {
         const mainCont = document.getElementById('mainCont');
         let openFileName = await setting.get('file');
+        mainCont.innerHTML = "";
+        openedMD5 = md5File.sync(openFileName).toString();
         changeTitle('viewIt - ' + (openFileName).split('\\').slice(-1)[0].split('.').slice(0, -1).join('.'));
         setTimeout(async () => {
             chardet.detectFile(openFileName, {sampleSize: 500}).then(async encoding => {
                 let input = fs.readFileSync(openFileName, {encoding: "binary"});
                 let data = iconv.decode(input, encoding);
                 fileList = data.toString().split('\n');
-                nowScroll = await setting.get('scroll');
+                fileList.push('');
+                nowScroll = await setting.get('scroll_' + openedMD5);
+                if (!nowScroll) {
+                    nowScroll = 0;
+                    await setting.set('scroll_' + openedMD5, 0);
+                }
                 loadBeginEl = nowScroll - chunkSize / 2;
                 if (loadBeginEl < 0) loadBeginEl = 0;
                 if (loadBeginEl > fileList.length - chunkSize - 1) loadBeginEl = fileList.length - chunkSize - 1;
@@ -76,6 +89,11 @@
                     mainCont.appendChild(newNode);
                 }
                 mainCont.scrollTop = document.getElementById('body_' + nowScroll).offsetTop - mainCont.offsetTop - 10;
+                try {
+                    document.getElementById('body_' + (fileList.length - 2)).style.marginBottom = '15px';
+                } catch (e) {
+
+                }
             });
         }, 0);
         mainCont.addEventListener('scroll', scrollHandler);

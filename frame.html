@@ -47,12 +47,12 @@
 <div id="sideMenu">
     <div class="sideItem" onclick="openViewer();">뷰어 열기</div>
     <div class="sideItem" onclick="openFile();">파일 열기</div>
-    <div class="sideItem" onclick="throw new Error('not made');">설정</div>
+    <div class="sideItem" onclick="loadHTML('setting.html')">설정</div>
 </div>
 
 <div id="main">
     <div style="height:calc(100vh - 32px);calc(100vw - 32px);display: flex;align-items: center;justify-content: center;">
-        <img src="res/logo.png" style="width:200px;">
+        <img alt="logo" src="res/logo.png" style="width:200px;">
     </div>
 </div>
 
@@ -86,13 +86,14 @@
     const locale = urlParams.get('locale');
     const chardet = require('chardet');
     const iconv = require('iconv-lite');
+    const md5File = require('md5-file');
 
     let nowMainEl = document.getElementById('main'), nextMainEl, updatingFrame = false, nowPage;
     let loadedPage = {};
 
     async function loadHTML(html) {
         if (updatingFrame) return;
-        if (nowPage == html) return;
+        if (nowPage === html) return;
         updatingFrame = true;
         let render;
         try {
@@ -118,7 +119,7 @@
             document.body.removeChild(nowMainEl);
             document.body.appendChild(nextMainEl);
             childrenArray.forEach(item => {
-                if (item.nodeName == "SCRIPT" && !(html in loadedPage)) {
+                if (item.nodeName === "SCRIPT" && !(html in loadedPage)) {
                     let jsItem = document.createElement('script');
                     jsItem.innerHTML = item.innerHTML;
                     document.getElementById('main').appendChild(jsItem);
@@ -215,7 +216,6 @@
     }
 
     function openFile() {
-        changeTitle('viewIt');
         loadHTML('open.html');
     }
 </script>
