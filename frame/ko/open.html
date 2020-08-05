@@ -19,6 +19,20 @@
                 showToast('지원하는 파일 형식이 아닙니다.');
             }
             await setting.set('file', file.path);
+            let openedMD5 = md5File.sync(file.path).toString();
+            let his = await setting.get('history'), nhis = [{
+                'name': (file.path).split('\\').slice(-1)[0].split('.').slice(0, -1).join('.'),
+                'path': file.path,
+                'md5': openedMD5
+            }];
+            if (!his) his = [];
+            for (let i = 0; i < his.length; i++) {
+                if (his[i].md5 !== openedMD5) {
+                    nhis.push(his[i]);
+                }
+            }
+            await setting.set('history', nhis);
+            loadHistory();
             loadHTML(`viewer_${await setting.get('type')}.html`);
         }
     }

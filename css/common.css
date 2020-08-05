@@ -69,7 +69,7 @@
 }
 
 #sideMenu {
-    transition: all cubic-bezier(0,.45,0,.99) .3s;
+    transition: all cubic-bezier(0, .45, 0, .99) .3s;
     width: 300px;
     height: calc(100vh - 32px);
     position: absolute;
@@ -85,7 +85,7 @@
 }
 
 .sideMenu-open {
-    transition: all cubic-bezier(0,.45,0,.99) .3s;
+    transition: all cubic-bezier(0, .45, 0, .99) .3s;
     left: 0 !important;
 }
 
@@ -94,4 +94,14 @@
     height: 32px;
     padding: 5px;
     font-size: 22px;
+}
+
+.hisItem {
+    width: 100%;
+    height: 32px;
+    padding: 5px 5px 5px 15px;
+    font-size: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }

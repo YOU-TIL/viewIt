@@ -49,11 +49,11 @@ a {
     background: #FFFFFF;
 }
 
-.sideItem:hover {
+.sideItem:hover, .hisItem:hover {
     background: rgba(0, 0, 0, 0.1) !important;
     opacity: 0.5;
 }
 
-.sideItem:active {
+.sideItem:hover, .hisItem:active {
     background: rgba(0, 0, 0, 0.2) !important;
 }

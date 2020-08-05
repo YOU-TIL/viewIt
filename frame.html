@@ -46,6 +46,7 @@
 
 <div id="sideMenu">
     <div class="sideItem" onclick="openViewer();">뷰어 열기</div>
+    <div id="history"></div>
     <div class="sideItem" onclick="openFile();">파일 열기</div>
     <div class="sideItem" onclick="loadHTML('setting.html')">설정</div>
 </div>
@@ -179,12 +180,33 @@
         document.getElementById('appTitle').innerText = msg;
     }
 
+    async function loadHistory() {
+        document.getElementById('history').innerHTML = '';
+        let his = await setting.get('history'), len = his.length;
+        if (len > 5) len = 4;
+        for (let i = 0; i < len; ++i) {
+            let newNode = document.createElement("p");
+            newNode.innerText = his[i].name;
+            newNode.className = "hisItem";
+            newNode.id = 'his_' + i;
+            document.getElementById('history').appendChild(newNode);
+        }
+        if (his.length > 5) {
+            let newNode = document.createElement("p");
+            newNode.innerText = '모든 기록 보기';
+            newNode.className = "hisItem";
+            newNode.id = 'his_5';
+            document.getElementById('history').appendChild(newNode);
+        }
+    }
+
     async function init() {
         document.querySelectorAll('.sideItem').forEach(el => {
             el.addEventListener('click', () => {
                 document.getElementById('sideMenu').classList.remove('sideMenu-open');
             });
         })
+        loadHistory();
         if (!await setting.get('firstRunSetted')) loadHTML('set1.html');
         else if (!await setting.get('file')) loadHTML('open.html');
         else loadHTML(`viewer_${await setting.get('type')}.html`);
