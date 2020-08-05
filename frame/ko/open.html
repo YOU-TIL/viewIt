@@ -17,7 +17,9 @@
                 await setting.set('type', 'text');
             } else {
                 showToast('지원하는 파일 형식이 아닙니다.');
+                return;
             }
+            showToast('불러오는 중...', '', '', true);
             await setting.set('file', file.path);
             let openedMD5 = md5File.sync(file.path).toString();
             let his = await setting.get('history'), nhis = [{

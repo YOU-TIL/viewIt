@@ -92,16 +92,29 @@
 .sideItem {
     width: 100%;
     height: 32px;
-    padding: 5px;
+    padding: 0 5px 5px;
     font-size: 22px;
+    vertical-align: middle;
+    line-height: 22px;
+}
+
+.sideItem .icon {
+    position: relative;
+    top: 5px;
 }
 
 .hisItem {
     width: 100%;
     height: 32px;
-    padding: 5px 5px 5px 15px;
+    padding: 5px 5px 5px 25px;
+    margin: 0;
     font-size: 20px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+}
+
+.icon {
+    font-family: "Segoe MDL2 Assets";
+    margin: 10px;
 }
