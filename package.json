@@ -17,7 +17,7 @@
     "url": "https://github.com/YOU-TIL/viewIt/issues"
   },
   "build": {
-    "productName": "Simple Viewer",
+    "productName": "viewIt",
     "appId": "youtil.doit.viewit",
     "artifactName": "viewIt.${ext}",
     "directories": {
