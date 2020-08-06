@@ -128,7 +128,6 @@
 }
 
 .scrim {
-    transition: opacity .5s;
     position: fixed;
     left: 0;
     top: 0;
@@ -140,7 +139,6 @@
 }
 
 .scrim.show {
-    transition: opacity .5s;
     opacity: 0.8;
     display: initial;
 }
@@ -164,6 +162,11 @@
     display: initial;
 }
 
+.modal.hide {
+    animation: modalClose .3s forwards cubic-bezier(0, .45, 0, .99);
+    display: initial;
+}
+
 @keyframes modalOpen {
     0% {
         transform: translateX(-50%) translateY(-50%) scale(.8);
@@ -171,5 +174,15 @@
     }
     100% {
         opacity: 1;
+    }
+}
+
+@keyframes modalClose {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-50%) translateY(-50%) scale(.8);
+        opacity: 0;
     }
 }

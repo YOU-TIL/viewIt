@@ -12,15 +12,15 @@
 </div>
 
 <div id="bookmark"></div>
-<div class="scrim"></div>
-<div class="modal">
-    <h2>이동할 줄을 입력하세요 : </h2>
-    <form class="form__group" id="comicName" onkeydown="return event.key != 'Enter';" style="padding:10px;">
-        <input class="form__field" id="comicSearch" name="fname" placeholder="검색" type="text">
-        <label class="form__label" for="comicSearch">줄</label>
+<div class="modal" id="lineModal">
+    <h2 id="lineModalTitle"></h2>
+    <form class="form__group" id="comicName" onkeydown="if(event.key === 'Enter') {enterGotoLine();return false;}"
+          style="padding:10px;">
+        <input class="form__field" id="lineInput" placeholder="검색" type="text">
+        <label class="form__label" for="lineInput">줄</label>
     </form>
     <br>
-    <span>이동</span><span style="width:10px;"></span><span onclick="closeModal();">취소</span>
+    <span onclick="enterGotoLine();" style="margin:10px;">이동</span><span onclick="closeDialog();" style="margin:10px;">취소</span>
 </div>
 </body>
 <script>
@@ -39,8 +39,8 @@
         if (nowScroll < 0) nowScroll = 0;
         if (nowScroll >= fileList.length) nowScroll = fileList.length - 1;
         try {
-            while (document.getElementById('body_' + nowScroll).offsetTop < document.getElementById('mainCont').offsetTop + document.getElementById('mainCont').scrollTop && nowScroll < loadEndEl) ++nowScroll;
-            while (document.getElementById('body_' + nowScroll).offsetTop >= document.getElementById('mainCont').offsetTop + document.getElementById('mainCont').scrollTop && nowScroll > loadBeginEl) --nowScroll;
+            while (document.getElementById('body_' + nowScroll).offsetTop - 20 < document.getElementById('mainCont').offsetTop + document.getElementById('mainCont').scrollTop && nowScroll < loadEndEl) ++nowScroll;
+            while (document.getElementById('body_' + nowScroll).offsetTop - 20 >= document.getElementById('mainCont').offsetTop + document.getElementById('mainCont').scrollTop && nowScroll > loadBeginEl) --nowScroll;
             while (loadBeginEl + chunkSize / 2 < nowScroll) {
                 document.getElementById('body_' + loadBeginEl).remove();
                 ++loadBeginEl;
@@ -89,6 +89,33 @@
         }, 200);
     }
 
+    async function viewer_text_scrollInit() {
+        nowScroll = await setting.get('scroll_' + openedMD5);
+        if (!nowScroll) {
+            nowScroll = 0;
+            await setting.set('scroll_' + openedMD5, 0);
+        }
+        loadBeginEl = nowScroll - chunkSize / 2;
+        if (loadBeginEl < 0) loadBeginEl = 0;
+        if (loadBeginEl > fileList.length - chunkSize - 1) loadBeginEl = fileList.length - chunkSize - 1;
+        loadEndEl = loadBeginEl + chunkSize;
+        for (let i = loadBeginEl; i < loadEndEl; ++i) {
+            let newNode = document.createElement("p");
+            newNode.innerText = fileList[i];
+            if (highlightObj.hasOwnProperty(i)) newNode.className = "body-common body-highlight";
+            else newNode.className = "body-common";
+            newNode.id = 'body_' + i;
+            if (fileList[i].trim()) newNode.onclick = highlight;
+            mainCont.appendChild(newNode);
+        }
+        mainCont.scrollTop = document.getElementById('body_' + nowScroll).offsetTop - mainCont.offsetTop - 10;
+        try {
+            document.getElementById('body_' + (fileList.length - 2)).style.marginBottom = '15px';
+        } catch (e) {
+
+        }
+    }
+
     async function viewer_text_init() {
         const mainCont = document.getElementById('mainCont');
         let openFileName = await setting.get('file');
@@ -100,33 +127,10 @@
         setTimeout(async () => {
             let encoding = await chardet.detectFile(openFileName, {sampleSize: 500});
             let input = fs.readFileSync(openFileName, {encoding: "binary"});
-            let data = require('iconv-lite').decode(input, encoding);
+            let data = iconv.decode(input, encoding);
             fileList = data.toString().split('\n');
             fileList.push('');
-            nowScroll = await setting.get('scroll_' + openedMD5);
-            if (!nowScroll) {
-                nowScroll = 0;
-                await setting.set('scroll_' + openedMD5, 0);
-            }
-            loadBeginEl = nowScroll - chunkSize / 2;
-            if (loadBeginEl < 0) loadBeginEl = 0;
-            if (loadBeginEl > fileList.length - chunkSize - 1) loadBeginEl = fileList.length - chunkSize - 1;
-            loadEndEl = loadBeginEl + chunkSize;
-            for (let i = loadBeginEl; i < loadEndEl; ++i) {
-                let newNode = document.createElement("p");
-                newNode.innerText = fileList[i];
-                if (highlightObj.hasOwnProperty(i)) newNode.className = "body-common body-highlight";
-                else newNode.className = "body-common";
-                newNode.id = 'body_' + i;
-                if (fileList[i].trim()) newNode.onclick = highlight;
-                mainCont.appendChild(newNode);
-            }
-            mainCont.scrollTop = document.getElementById('body_' + nowScroll).offsetTop - mainCont.offsetTop - 10;
-            try {
-                document.getElementById('body_' + (fileList.length - 2)).style.marginBottom = '15px';
-            } catch (e) {
-
-            }
+            await viewer_text_scrollInit();
             mainCont.addEventListener('scroll', scrollHandler);
             window.addEventListener('resize', resizeHandler);
             closeToast();
@@ -160,12 +164,13 @@
 
     async function scrollTo(row) {
         showToast('불러오는 중...', '', '', true);
+        document.getElementById('mainCont').innerHTML = "";
         nowScroll = row;
-        viewer_text_exit();
         await setting.set('scroll_' + openedMD5, nowScroll);
-        await viewer_text_init();
+        await viewer_text_scrollInit();
         closeAllOption();
         await scrollHandler();
+        closeToast();
     }
 
     async function scrollToTop() {
@@ -210,9 +215,22 @@
     }
 
     function gotoLine() {
-        closeAllOption();
-        document.querySelector('.scrim').classList.add('show');
-        document.querySelector('.modal').classList.add('show');
+        document.getElementById('lineInput').value = '';
+        document.getElementById('lineModalTitle').innerText = `이동할 줄을 입력하세요(1 - ${fileList.length}) : `
+        openDialog('lineModal');
+        document.getElementById('lineInput').focus();
+    }
+
+    function enterGotoLine() {
+        closeDialog();
+        let li = parseInt(document.getElementById('lineInput').value);
+        if (!li || li < 1 || li > fileList.length) {
+            showToast('올바른 줄이 아닙니다.');
+            return;
+        }
+        li--;
+        if (li > fileList.length - 3) li = fileList.length - 3;
+        scrollTo(li);
     }
 </script>
 </html>

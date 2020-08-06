@@ -64,6 +64,7 @@
 <div id="scripts"></div>
 
 <div id="toast">테스트</div>
+<div class="scrim"></div>
 
 <script>
     require('./js/frameLess.js');
@@ -92,6 +93,7 @@
     const locale = urlParams.get('locale');
     const chardet = require('chardet');
     const md5File = require('md5-file');
+    const iconv = require('iconv-lite');
 
     let nowMainEl = document.getElementById('main'), nextMainEl, updatingFrame = false, nowPage;
     let loadedPage = {};
@@ -250,6 +252,24 @@
 
     function openFile() {
         loadHTML('open.html');
+    }
+
+    let openedDialog;
+
+    function openDialog(id) {
+        closeAllOption();
+        document.querySelector('.scrim').classList.add('show');
+        document.getElementById(id).classList.add('show');
+        openedDialog = id;
+    }
+
+    function closeDialog() {
+        document.querySelector('.scrim').classList.remove('show');
+        document.getElementById(openedDialog).classList.remove('show');
+        document.getElementById(openedDialog).classList.add('hide');
+        setTimeout(() => {
+            document.getElementById(openedDialog).classList.remove('hide');
+        }, 300);
     }
 </script>
 </body>
