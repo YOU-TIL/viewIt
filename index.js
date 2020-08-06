@@ -1,5 +1,6 @@
-const {app, BrowserWindow, ipcMain} = require('electron')
-const path = require('path')
+const {app, BrowserWindow, ipcMain} = require('electron');
+const path = require('path');
+const {autoUpdater} = require("electron-updater");
 
 let win;
 
@@ -30,13 +31,18 @@ function createWindow() {
     win.loadURL(getFramePath());
 
     //win.webContents.openDevTools({mode: "detach"});
+    setTimeout(() => {
+        autoUpdater.checkForUpdates();
+    }, 1000)
 
     win.on('closed', () => {
         win = null;
     });
 }
 
-app.on('ready', createWindow);
+app.on('ready', () => {
+    createWindow();
+});
 
 
 app.on('window-all-closed', () => {
@@ -49,4 +55,18 @@ app.on('activate', () => {
     if (win === null) {
         createWindow();
     }
+});
+
+function sendToast(msg) {
+    win.webContents.send('showToast', msg);
+}
+
+autoUpdater.on('update-available', (info) => {
+    sendToast('업데이트를 다운받는 중...');
+});
+autoUpdater.on('error', (err) => {
+    sendToast('업데이트 중 오류가 발생했습니다.');
+});
+autoUpdater.on('update-downloaded', (info) => {
+    sendToast('다음 시작시 업데이트가 적용됩니다.');
 });
