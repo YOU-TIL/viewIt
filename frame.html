@@ -84,7 +84,7 @@
 </div>
 
 <script>
-    const nowVersion = 21;
+    const nowVersion = 22;
 
     require('./js/frameLess.js');
     const setting = require('electron-settings');
@@ -106,7 +106,6 @@
 
     const fs = require('fs');
     const path = require('path');
-    const {spawn, execSync} = require('child_process');
     const {dialog} = require('electron').remote;
     const {ipcRenderer} = require('electron');
     const urlParams = new URLSearchParams(window.location.search);
@@ -232,7 +231,9 @@
     }
 
     async function init() {
-        openDialog('updatedModal');
+        let ver = await setting.get('ver');
+        if (!ver || nowVersion > ver) openDialog('updatedModal');
+        await setting.set('ver', nowVersion);
         document.querySelectorAll('.sideItem').forEach(el => {
             el.addEventListener('click', () => {
                 document.getElementById('sideMenu').classList.remove('sideMenu-open');
