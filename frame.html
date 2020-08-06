@@ -72,6 +72,10 @@
     <br>
     <h3>새로운 기능</h3>
     <br>
+    <h4>최근 파일</h4>
+    <br>
+    <p>메뉴에 표시되는 최근 파일을 클릭해서 최근에 열었던 파일을 빠르게 여세요!</p>
+    <br>
     <h4>자동 업데이트</h4>
     <br>
     <p>이제 viewIt이 자동 업데이트를 지원합니다. 수동으로 업데이트 하지 않아도, 항상 최신 버전을 쓸 수 있습니다!</p>
@@ -84,7 +88,7 @@
 </div>
 
 <script>
-    const nowVersion = 22;
+    const nowVersion = 23;
 
     require('./js/frameLess.js');
     const setting = require('electron-settings');
@@ -121,9 +125,9 @@
         showToast(msg);
     });
 
-    async function loadHTML(html) {
+    async function loadHTML(html, force = false) {
         if (updatingFrame) return;
-        if (nowPage === html) return;
+        if (nowPage === html && !force) return;
         updatingFrame = true;
         let render;
         try {
@@ -218,6 +222,8 @@
             newNode.innerText = his[i].name;
             newNode.className = "hisItem";
             newNode.id = 'his_' + i;
+            newNode.dataset.path = his[i].path;
+            newNode.onclick = historyHandler;
             document.getElementById('history').appendChild(newNode);
         }
         if (his.length > 5) {
@@ -246,6 +252,12 @@
             showToast('불러오는 중...', '', '', true);
             loadHTML(`viewer_${await setting.get('type')}.html`);
         }
+    }
+
+    async function historyHandler(e) {
+        await setting.set('file', e.toElement.dataset.path);
+        showToast('불러오는 중...', '', '', true);
+        loadHTML(`viewer_${await setting.get('type')}.html`, true);
     }
 
     setTimeout(() => {
