@@ -49,11 +49,15 @@ a {
     background: #FFFFFF;
 }
 
-.sideItem:hover, .hisItem:hover {
+#bookmark {
+    background: #FFFFFF;
+}
+
+.sideItem:hover, .hisItem:hover, .bookmarkItem:hover {
     background: rgba(0, 0, 0, 0.1) !important;
 }
 
-.sideItem:hover, .hisItem:active {
+.sideItem:hover, .hisItem:active, .bookmarkItem:active {
     background: rgba(0, 0, 0, 0.2) !important;
 }
 
@@ -61,10 +65,14 @@ a {
     background: #FFFFFF;
 }
 
-.body-common:active {
-    background: #AAAAAA;
-}
-
 .body-highlight {
     background: #feffbe;
+}
+
+#bookmark-title {
+    background: #FFFFFF;
+}
+
+.modal {
+    background: #FFFFFF;
 }

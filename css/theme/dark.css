@@ -79,6 +79,10 @@ a {
     background: #333333;
 }
 
+#bookmark {
+    background: #333333;
+}
+
 .sideItem:hover, .hisItem:hover {
     background: rgba(255, 255, 255, 0.1) !important;
 }
@@ -91,10 +95,14 @@ a {
     background: #333333;
 }
 
-.body-common:active {
-    background: #777777;
-}
-
 .body-highlight {
     background: #626301;
+}
+
+#bookmark-title {
+    background: #333333;
+}
+
+.modal {
+    background: #333333;
 }

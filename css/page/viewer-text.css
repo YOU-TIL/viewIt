@@ -31,3 +31,33 @@
     transition: opacity 0.15s cubic-bezier(0, .45, 0, .99);
     height: 130px;
 }
+
+#bookmark {
+    transition: all cubic-bezier(0, .45, 0, .99) .3s;
+    width: 300px;
+    height: calc(100vh - 32px);
+    position: fixed;
+    top: 32px;
+    right: -300px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    z-index: 100;
+    overflow-y: scroll;
+    padding-top: 60px;
+}
+
+.fullscreened:not(.showTitlebar) #bookmark {
+    top: 0 !important;
+    height: 100vh;
+}
+
+.bookmark-open {
+    transition: all cubic-bezier(0, .45, 0, .99) .3s;
+    right: 0 !important;
+}
+
+#bookmark-title {
+    padding: 15px;
+    margin-top: -60px;
+    width: 100%;
+    position: fixed;
+}

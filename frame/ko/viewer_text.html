@@ -7,8 +7,20 @@
 <div id="view-text-progress-option">
     <div onclick="scrollToTop();">맨 위로</div>
     <div onclick="scrollToBottom();">맨 아래로</div>
-    <div>특정 줄로 이동</div>
-    <div>북마크</div>
+    <div onclick="gotoLine();">특정 줄로 이동</div>
+    <div onclick="openBookmark();">북마크</div>
+</div>
+
+<div id="bookmark"></div>
+<div class="scrim"></div>
+<div class="modal">
+    <h2>이동할 줄을 입력하세요 : </h2>
+    <form class="form__group" id="comicName" onkeydown="return event.key != 'Enter';" style="padding:10px;">
+        <input class="form__field" id="comicSearch" name="fname" placeholder="검색" type="text">
+        <label class="form__label" for="comicSearch">줄</label>
+    </form>
+    <br>
+    <span>이동</span><span style="width:10px;"></span><span onclick="closeModal();">취소</span>
 </div>
 </body>
 <script>
@@ -20,16 +32,15 @@
         await setting.set('scroll_' + openedMD5, nowScroll);
     }
 
-    setInterval(saveScroll, 500);
+    let intv = setInterval(saveScroll, 500);
 
     async function scrollHandler() {
         document.getElementById('sideMenu').classList.remove('sideMenu-open');
         if (nowScroll < 0) nowScroll = 0;
         if (nowScroll >= fileList.length) nowScroll = fileList.length - 1;
         try {
-
-            while (document.getElementById('body_' + nowScroll).offsetTop <= document.getElementById('mainCont').offsetTop + document.getElementById('mainCont').scrollTop && nowScroll < loadEndEl) ++nowScroll;
-            while (document.getElementById('body_' + nowScroll).offsetTop > document.getElementById('mainCont').offsetTop + document.getElementById('mainCont').scrollTop && nowScroll > loadBeginEl) --nowScroll;
+            while (document.getElementById('body_' + nowScroll).offsetTop < document.getElementById('mainCont').offsetTop + document.getElementById('mainCont').scrollTop && nowScroll < loadEndEl) ++nowScroll;
+            while (document.getElementById('body_' + nowScroll).offsetTop >= document.getElementById('mainCont').offsetTop + document.getElementById('mainCont').scrollTop && nowScroll > loadBeginEl) --nowScroll;
             while (loadBeginEl + chunkSize / 2 < nowScroll) {
                 document.getElementById('body_' + loadBeginEl).remove();
                 ++loadBeginEl;
@@ -45,6 +56,7 @@
                 if (highlightObj.hasOwnProperty(loadBeginEl)) newNode.className = "body-common body-highlight";
                 else newNode.className = "body-common";
                 newNode.id = 'body_' + loadBeginEl;
+                if (fileList[loadBeginEl].trim()) newNode.onclick = highlight;
                 document.getElementById('mainCont').prepend(newNode);
             }
             while (loadEndEl - chunkSize / 2 < nowScroll && fileList.length - 1 > loadEndEl) {
@@ -53,6 +65,7 @@
                 if (highlightObj.hasOwnProperty(loadEndEl)) newNode.className = "body-common body-highlight";
                 else newNode.className = "body-common";
                 newNode.id = 'body_' + loadEndEl;
+                if (fileList[loadEndEl].trim()) newNode.onclick = highlight;
                 document.getElementById('mainCont').append(newNode);
                 ++loadEndEl;
             }
@@ -79,52 +92,52 @@
     async function viewer_text_init() {
         const mainCont = document.getElementById('mainCont');
         let openFileName = await setting.get('file');
-        highlightObj = await setting.get('highlight_' + md5File);
+        openedMD5 = md5File.sync(openFileName).toString();
+        highlightObj = await setting.get('highlight_' + openedMD5);
         if (!highlightObj) highlightObj = Object();
         mainCont.innerHTML = "";
-        openedMD5 = md5File.sync(openFileName).toString();
         changeTitle('viewIt - ' + (openFileName).split('\\').slice(-1)[0].split('.').slice(0, -1).join('.'));
         setTimeout(async () => {
-            chardet.detectFile(openFileName, {sampleSize: 500}).then(async encoding => {
-                let input = fs.readFileSync(openFileName, {encoding: "binary"});
-                let data = iconv.decode(input, encoding);
-                fileList = data.toString().split('\n');
-                fileList.push('');
-                nowScroll = await setting.get('scroll_' + openedMD5);
-                if (!nowScroll) {
-                    nowScroll = 0;
-                    await setting.set('scroll_' + openedMD5, 0);
-                }
-                loadBeginEl = nowScroll - chunkSize / 2;
-                if (loadBeginEl < 0) loadBeginEl = 0;
-                if (loadBeginEl > fileList.length - chunkSize - 1) loadBeginEl = fileList.length - chunkSize - 1;
-                loadEndEl = loadBeginEl + chunkSize;
-                for (let i = loadBeginEl; i < loadEndEl; ++i) {
-                    let newNode = document.createElement("p");
-                    newNode.innerText = fileList[i];
-                    if (highlightObj.hasOwnProperty(i)) newNode.className = "body-common body-highlight";
-                    else newNode.className = "body-common";
-                    newNode.id = 'body_' + i;
-                    newNode.onclick = highlight;
-                    mainCont.appendChild(newNode);
-                }
-                mainCont.scrollTop = document.getElementById('body_' + nowScroll).offsetTop - mainCont.offsetTop - 10;
-                try {
-                    document.getElementById('body_' + (fileList.length - 2)).style.marginBottom = '15px';
-                } catch (e) {
+            let encoding = await chardet.detectFile(openFileName, {sampleSize: 500});
+            let input = fs.readFileSync(openFileName, {encoding: "binary"});
+            let data = require('iconv-lite').decode(input, encoding);
+            fileList = data.toString().split('\n');
+            fileList.push('');
+            nowScroll = await setting.get('scroll_' + openedMD5);
+            if (!nowScroll) {
+                nowScroll = 0;
+                await setting.set('scroll_' + openedMD5, 0);
+            }
+            loadBeginEl = nowScroll - chunkSize / 2;
+            if (loadBeginEl < 0) loadBeginEl = 0;
+            if (loadBeginEl > fileList.length - chunkSize - 1) loadBeginEl = fileList.length - chunkSize - 1;
+            loadEndEl = loadBeginEl + chunkSize;
+            for (let i = loadBeginEl; i < loadEndEl; ++i) {
+                let newNode = document.createElement("p");
+                newNode.innerText = fileList[i];
+                if (highlightObj.hasOwnProperty(i)) newNode.className = "body-common body-highlight";
+                else newNode.className = "body-common";
+                newNode.id = 'body_' + i;
+                if (fileList[i].trim()) newNode.onclick = highlight;
+                mainCont.appendChild(newNode);
+            }
+            mainCont.scrollTop = document.getElementById('body_' + nowScroll).offsetTop - mainCont.offsetTop - 10;
+            try {
+                document.getElementById('body_' + (fileList.length - 2)).style.marginBottom = '15px';
+            } catch (e) {
 
-                }
-                mainCont.addEventListener('scroll', scrollHandler);
-                window.addEventListener('resize', resizeHandler);
-                closeToast();
-                await scrollHandler();
-            });
+            }
+            mainCont.addEventListener('scroll', scrollHandler);
+            window.addEventListener('resize', resizeHandler);
+            closeToast();
+            await scrollHandler();
         }, 0);
     }
 
     function viewer_text_exit() {
         document.getElementById('mainCont').removeEventListener('scroll', scrollHandler);
         window.removeEventListener('resize', resizeHandler);
+        clearInterval(intv);
         fileList = [];
     }
 
@@ -135,6 +148,7 @@
 
     function closeAllOption() {
         document.getElementById('sideMenu').classList.remove('sideMenu-open');
+        document.getElementById('bookmark').classList.remove('bookmark-open');
         if (document.getElementById('view-text-progress-option').classList.contains('open')) {
             document.getElementById('view-text-progress-option').classList.add('close');
             setTimeout(() => {
@@ -144,19 +158,9 @@
         }
     }
 
-    async function scrollToTop() {
+    async function scrollTo(row) {
         showToast('불러오는 중...', '', '', true);
-        nowScroll = 0;
-        viewer_text_exit();
-        await setting.set('scroll_' + openedMD5, 0);
-        await viewer_text_init();
-        closeAllOption();
-        await scrollHandler();
-    }
-
-    async function scrollToBottom() {
-        showToast('불러오는 중...', '', '', true);
-        nowScroll = fileList.length - 3;
+        nowScroll = row;
         viewer_text_exit();
         await setting.set('scroll_' + openedMD5, nowScroll);
         await viewer_text_init();
@@ -164,8 +168,16 @@
         await scrollHandler();
     }
 
+    async function scrollToTop() {
+        await scrollTo(0);
+    }
+
+    async function scrollToBottom() {
+        await scrollTo(fileList.length - 3);
+    }
+
     async function highlight(e) {
-        if (document.getElementById('view-text-progress-option').classList.contains('open')) return;
+        if (document.getElementById('view-text-progress-option').classList.contains('open') || document.getElementById('sideMenu').classList.contains('sideMenu-open') || document.getElementById('bookmark').classList.contains('bookmark-open')) return;
         el = e.toElement;
         let id = el.id.substr(5);
         if (highlightObj.hasOwnProperty(id)) {
@@ -175,7 +187,32 @@
             highlightObj[id] = true;
             document.getElementById('body_' + id).classList.add('body-highlight');
         }
-        await setting.set('highlight_' + md5File, highlightObj);
+        await setting.set('highlight_' + openedMD5, highlightObj);
+    }
+
+    function openBookmark() {
+        closeAllOption();
+        document.getElementById('bookmark').innerHTML = '<h2 id="bookmark-title">북마크</h2>';
+        for (let i in highlightObj) {
+            let newNode = document.createElement("p");
+            newNode.innerText = (parseInt(i) + 1).toString() + ' - ' + fileList[i];
+            newNode.className = "bookmarkItem";
+            newNode.id = 'bookmark_' + i;
+            newNode.dataset.line = i.toString();
+            newNode.onclick = bookmarkHandler;
+            document.getElementById('bookmark').appendChild(newNode);
+        }
+        document.getElementById('bookmark').classList.add('bookmark-open');
+    }
+
+    function bookmarkHandler(e) {
+        scrollTo(parseInt(e.toElement.dataset.line));
+    }
+
+    function gotoLine() {
+        closeAllOption();
+        document.querySelector('.scrim').classList.add('show');
+        document.querySelector('.modal').classList.add('show');
     }
 </script>
 </html>

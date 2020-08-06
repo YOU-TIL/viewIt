@@ -111,7 +111,65 @@
     overflow: hidden;
 }
 
+.bookmarkItem {
+    width: 100%;
+    height: 32px;
+    padding: 0 5px 5px;
+    margin: 0;
+    font-size: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 .icon {
     font-family: "Segoe MDL2 Assets";
     margin: 10px;
+}
+
+.scrim {
+    transition: opacity .5s;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    opacity: 0;
+    background: #000000;
+    display: none;
+}
+
+.scrim.show {
+    transition: opacity .5s;
+    opacity: 0.8;
+    display: initial;
+}
+
+.modal {
+    transition: all .5s;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    position: fixed;
+    width: 50vw;
+    z-index: 10000;
+    max-width: 600px;
+    top: 50vh;
+    left: 50vw;
+    padding: 20px;
+    transform: translateX(-50%) translateY(-50%);
+    display: none;
+}
+
+.modal.show {
+    animation: modalOpen .3s forwards cubic-bezier(0, .45, 0, .99);
+    display: initial;
+}
+
+@keyframes modalOpen {
+    0% {
+        transform: translateX(-50%) translateY(-50%) scale(.8);
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
