@@ -31,6 +31,7 @@ function createWindow() {
     win.loadURL(getFramePath());
 
     //win.webContents.openDevTools({mode: "detach"});
+
     setTimeout(() => {
         autoUpdater.checkForUpdates();
     }, 1000)

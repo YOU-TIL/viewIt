@@ -127,6 +127,13 @@
         if (!highlightObj) highlightObj = Object();
         mainCont.innerHTML = "";
         changeTitle('viewIt - ' + (openFileName).split('\\').slice(-1)[0].split('.').slice(0, -1).join('.'));
+        smoothScrollObj = new SmoothScroll(document.getElementById('mainCont'), 8, 1.08);
+        window.addEventListener('keydown', function (e) {
+            if (e.keyCode == 32) {
+                e.preventDefault();
+                smoothScrollObj.scroll(30);
+            }
+        });
         setTimeout(async () => {
             let encoding = await chardet.detectFile(openFileName, {sampleSize: 500});
             let input = fs.readFileSync(openFileName, {encoding: "binary"});

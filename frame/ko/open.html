@@ -14,7 +14,7 @@
         if (e.dataTransfer.items[0].kind === 'file') {
             const file = e.dataTransfer.items[0].getAsFile();
             if (file.type.substring(0, 4) === 'text') {
-                await setting.set('type', 'text');
+                await setting.set('typ', 'text');
             } else {
                 showToast('지원하는 파일 형식이 아닙니다.');
                 return;
@@ -40,7 +40,7 @@
         }
         await setting.set('history', nhis);
         loadHistory();
-        loadHTML(`viewer_${await setting.get('type')}.html`);
+        loadHTML(`viewer_${await setting.get('typ')}.html`);
     }
 
     function open_init() {
@@ -53,8 +53,16 @@
             filters: [
                 {name: 'Text', extensions: ['txt']},
             ]
-        }).then(res => {
-            if (res.filePaths[0]) fileOpenHandler(res.filePaths[0]);
+        }).then(async res => {
+            if (res.filePaths[0]) {
+                if (res.filePaths[0].substring(res.filePaths[0].length - 3) === 'txt') {
+                    await setting.set('typ', 'text');
+                    fileOpenHandler(res.filePaths[0]);
+                } else {
+                    showToast('지원하는 파일 형식이 아닙니다.');
+                    return;
+                }
+            }
         });
     }
 </script>
