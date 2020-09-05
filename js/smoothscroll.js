@@ -1,7 +1,6 @@
 // https://stackoverflow.com/questions/47011055/smooth-vertical-scrolling-on-mouse-wheel-in-vanilla-javascript
 
 class SmoothScroll {
-
     constructor(target, speed, smooth) {
         this.target = target
         this.speed = speed
